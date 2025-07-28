@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    
+    - name: Cache Swift Package Manager
+      uses: actions/cache@v3
+      with:
+        path: .build
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    
+    - name: Install SwiftLint
+      run: brew install swiftlint
+    
+    - name: SwiftLint
+      run: swiftlint lint --strict
+      
+    - name: Build
+      run: |
+        xcodebuild clean build \
+          -project TimeCapsule.xcodeproj \
+          -scheme TimeCapsule \
+          -destination "platform=iOS Simulator,name=iPhone 15" \
+          CODE_SIGNING_ALLOWED=NO
+    
+    - name: Test
+      run: |
+        xcodebuild test \
+          -project TimeCapsule.xcodeproj \
+          -scheme TimeCapsule \
+          -destination "platform=iOS Simulator,name=iPhone 15" \
+          CODE_SIGNING_ALLOWED=NO

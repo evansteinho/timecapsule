@@ -1,0 +1,50 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Run tests"
+  lane :test do
+    run_tests(
+      workspace: "TimeCapsule.xcworkspace",
+      scheme: "TimeCapsule",
+      devices: ["iPhone 15"]
+    )
+  end
+
+  desc "Run SwiftLint"
+  lane :lint do
+    swiftlint(
+      mode: :lint,
+      strict: true
+    )
+  end
+
+  desc "Build for testing"
+  lane :build do
+    build_app(
+      workspace: "TimeCapsule.xcworkspace",
+      scheme: "TimeCapsule",
+      skip_package_ipa: true,
+      skip_archive: true
+    )
+  end
+
+  desc "Deploy a new version to TestFlight"
+  lane :beta do
+    increment_build_number(xcodeproj: "TimeCapsule.xcodeproj")
+    build_app(
+      workspace: "TimeCapsule.xcworkspace",
+      scheme: "TimeCapsule"
+    )
+    upload_to_testflight
+  end
+
+  desc "Deploy a new version to the App Store"
+  lane :release do
+    increment_build_number(xcodeproj: "TimeCapsule.xcodeproj")
+    build_app(
+      workspace: "TimeCapsule.xcworkspace",
+      scheme: "TimeCapsule"
+    )
+    upload_to_app_store
+  end
+end

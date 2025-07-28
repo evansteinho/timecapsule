@@ -1,0 +1,16 @@
+app_identifier("com.timecapsule.app")
+apple_id("") # Your Apple ID email
+
+itc_team_id("") # App Store Connect Team ID
+team_id("") # Developer Portal Team ID
+
+# Uncomment the lines below to automatically use the latest provisioning profile
+# for_platform :ios do
+#   for_lane :release do
+#     provisioning_profile_specifier "TimeCapsule AppStore"
+#   end
+#   
+#   for_lane :beta do
+#     provisioning_profile_specifier "TimeCapsule AdHoc"
+#   end
+# end
